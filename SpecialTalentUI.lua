@@ -297,6 +297,15 @@ function SpecialTalentFrame_Update()
 			for i=1, MAX_NUM_TALENTS do
 				button = getglobal("SpecialTalentFrameTabFrame"..f.."Talent"..i);
 				if ( i <= numTalents ) then
+					name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(f, i);
+					SPECIAL_TALENT_BRANCH_ARRAY[f][tier][column].id = button:GetID();
+				end
+			end
+			for i=1, MAX_NUM_TALENTS do
+				button = getglobal("SpecialTalentFrameTabFrame"..f.."Talent"..i);
+
+				if ( i <= numTalents ) then
+
 					-- Set the button info
 					name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(f, i);
 
