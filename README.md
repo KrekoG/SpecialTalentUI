@@ -7,9 +7,14 @@ A WoW 1.12 Vanilla+ addon that allows the in-game planning of talents, originaly
 
 ![image](https://user-images.githubusercontent.com/1638449/141655998-31960185-e874-4881-a7c0-314471089e1b.png)
 
+![image](https://user-images.githubusercontent.com/1638449/142923292-187f1f65-9625-46ae-b655-9980b6387b7b.png)
+
+![image](https://user-images.githubusercontent.com/1638449/142923550-200df024-6c8b-41c3-9e95-3e7948e914ed.png)
+
 
 ## Changes from the original version
-- fixed an issue where the addon would not work with certain custom-made talents on certain private servers such as [Vanilla+](https://vanillaplus.org/)
+- Fixed an issue where the addon would not work with certain custom-made talents on certain private servers such as [Vanilla+](https://vanillaplus.org/)
+- Allowed the option to change between multiple talent plans per character
 
 ## Installation instructions
 1. Install the `SpecialTalent` dependency from [here](https://github.com/KrekoG/SpecialTalent/tree/main)
