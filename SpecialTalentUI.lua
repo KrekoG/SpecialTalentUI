@@ -10,6 +10,7 @@ INITIAL_SPECIAL_TALENT_OFFSET_X = 53;
 INITIAL_SPECIAL_TALENT_OFFSET_Y = 45;
 TALENT_POINTS_AT_60 = 51;
 CYAN_FONT_COLOR_CODE = "|cff00ffff";
+MAX_PLAN_COUNT = 9;
 
 TALENT_BRANCH_TEXTURECOORDS = {
 	up = {
@@ -101,11 +102,11 @@ function SpecialTalentFrame_OnLoad()
 			end
 		end
 	end
-	
+
 	this.learnMode = "learned";
 	PlayerOfRealm = UnitName("player").." of "..GetRealmName();
 	SpecialTalentFrame_Toggle = SpecialTalentFrame_ToggleFrame;
-	
+
 	if ( tp_webdata ) then
 		SPECIAL_TALENT_CLASSES = { Druid=1, Hunter=2, Mage=3, Paladin=4, Priest=5, Rogue=6, Shaman=7, Warlock=8, Warrior=9, };
 	end
@@ -118,7 +119,14 @@ function SpecialTalentFrame_OnShow()
 	PlaySound("TalentScreenOpen");
 	UpdateMicroButtons();
 
-	SpecialTalentFrameTitleText:SetText(SPECIAL_TALENT.." - "..UnitClass("player"));
+	if (not SpecialTalentPlannedSaved[PlayerOfRealm]) then
+		SpecialTalentPlannedSaved[PlayerOfRealm]={}
+	end
+	if (not SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]) then
+		SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]=1
+	end
+
+	SpecialTalentFrameTitleText:SetText(SPECIAL_TALENT.." - "..SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]);
 	SetPortraitTexture(SpecialTalentFramePortrait, "player");
 	--show total talent points
 	local tpoints = max(UnitLevel("player")-9, 0);
@@ -145,7 +153,7 @@ function SpecialTalentFrame_Minimize()
 	SpecialTalentFrame:SetHeight(586);
 	for i=2, 4 do
 		getglobal("SpecialTalentFrameBorder_TopLeft"..i):Hide();
-		getglobal("SpecialTalentFrameBorder_BottomLeft"..i):Hide();		
+		getglobal("SpecialTalentFrameBorder_BottomLeft"..i):Hide();
 	end
 	for i=1, MAX_TALENT_TABS do
 		local button=getglobal("SpecialTalentFrameTab"..i);
@@ -153,7 +161,7 @@ function SpecialTalentFrame_Minimize()
 			break;
 		end
 		button:Show();
-		
+
 		getglobal("SpecialTalentFrameTabFrame"..i):SetPoint("TOPLEFT", SpecialTalentFrame, "TOPLEFT", 0, -80);
 	end
 
@@ -178,7 +186,7 @@ function SpecialTalentFrame_Maximize()
 	SpecialTalentFrame:SetHeight(586);
 	for i=2, 4 do
 		getglobal("SpecialTalentFrameBorder_TopLeft"..i):Show();
-		getglobal("SpecialTalentFrameBorder_BottomLeft"..i):Show();		
+		getglobal("SpecialTalentFrameBorder_BottomLeft"..i):Show();
 	end
 	for i=1, MAX_TALENT_TABS do
 		local button=getglobal("SpecialTalentFrameTab"..i);
@@ -186,7 +194,7 @@ function SpecialTalentFrame_Maximize()
 			break;
 		end
 		button:Hide();
-		
+
 		getglobal("SpecialTalentFrameTabFrame"..i):SetPoint("TOPLEFT", SpecialTalentFrame, "TOPLEFT", (i-1)*278, -80);
 	end
 
@@ -219,7 +227,7 @@ function SpecialTalentFrame_OnEvent()
 		SpecialTalentFrame_CheckDragged();
 		SpecialTalentFrameTabs_Initialize();
 	end
-	
+
 end
 
 function SpecialTalentFrameTalent_OnEvent()
@@ -246,7 +254,7 @@ function SpecialTalentFrame_Update()
 	local learned = "";
 	local planned = "";
 	local player = PlayerOfRealm;
-	
+
 	SpecialTalentFrame_UpdateTalentPoints();
 
 	for f=1, MAX_TALENT_TABS do -- for each tab frame
@@ -274,9 +282,9 @@ function SpecialTalentFrame_Update()
 			planned = planned.."/";
 		end
 		learned = learned..pointsSpent;
-		planned = planned..SpecialTalentPlannedSaved[player][f].points;
+		planned = planned..SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][f].points;
 		getglobal("SpecialTalentFrameTabFrame"..f.."SpentPoints"):SetText(format(MASTERY_POINTS_SPENT, name).." "..NORMAL_FONT_COLOR_CODE..pointsSpent..FONT_COLOR_CODE_CLOSE);
-		getglobal("SpecialTalentFrameTabFrame"..f.."SpentPoints"):SetText(CYAN_FONT_COLOR_CODE .. SpecialTalentPlannedSaved[player][f].points .. "|r :"..RED_FONT_COLOR_CODE..talentTabName.."|r: "..NORMAL_FONT_COLOR_CODE..pointsSpent.."|r");
+		getglobal("SpecialTalentFrameTabFrame"..f.."SpentPoints"):SetText(CYAN_FONT_COLOR_CODE .. SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][f].points .. "|r :"..RED_FONT_COLOR_CODE..talentTabName.."|r: "..NORMAL_FONT_COLOR_CODE..pointsSpent.."|r");
 		getglobal("SpecialTalentFrameTabFrame"..f).pointsSpent = pointsSpent;
 
 		local numTalents = GetNumTalents(f);
@@ -291,7 +299,7 @@ function SpecialTalentFrame_Update()
 		local button;
 
 		getglobal("SpecialTalentFrameTabFrame"..f).greatestTier = 0;
-		
+
 		if ( not SpecialTalentFrameSaved.frameMinimized or SpecialTalentFrameSaved.tabShown==f ) then
 			getglobal("SpecialTalentFrameTabFrame"..f):Show();
 			for i=1, MAX_NUM_TALENTS do
@@ -310,7 +318,7 @@ function SpecialTalentFrame_Update()
 					name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(f, i);
 
 					-- Show planned points and border if necessary
-					local plannedPoints = SpecialTalentPlannedSaved[player][f][i];
+					local plannedPoints = SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][f][i];
 					if ( not plannedPoints or plannedPoints<1 ) then
 						getglobal("SpecialTalentFrameTabFrame"..f.."Talent"..i.."Planned"):Hide();
 						getglobal("SpecialTalentFrameTabFrame"..f.."Talent"..i.."PlannedBorder"):Hide();
@@ -346,9 +354,9 @@ function SpecialTalentFrame_Update()
 						tabPointsSpent = getglobal("SpecialTalentFrameTabFrame"..f).pointsSpent;
 						talentPoints = SpecialTalentFrame.talentPoints;
 					elseif ( SpecialTalentFrame.learnMode == "planned" ) then
-						tabPointsSpent = SpecialTalentPlannedSaved[player][f].points;
-						talentPoints = TALENT_POINTS_AT_60 - SpecialTalentPlannedSaved[player].points;
-						rank = SpecialTalentPlannedSaved[player][f][i] or 0;
+						tabPointsSpent = SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][f].points;
+						talentPoints = TALENT_POINTS_AT_60 - SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]].points;
+						rank = SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][f][i] or 0;
 					end
 
 					-- If player has no talent points then show only talents with points in them
@@ -391,12 +399,12 @@ function SpecialTalentFrame_Update()
 					end
 
 					button:Show();
-				else	
+				else
 					button:Hide();
 				end
 			end
 		end
-	
+
 		-- Draw the prereq branches
 		local node;
 		local textureIndex = 1;
@@ -410,11 +418,11 @@ function SpecialTalentFrame_Update()
 		for i=1, MAX_NUM_TALENT_TIERS do
 			for j=1, NUM_TALENT_COLUMNS do
 				node = SPECIAL_TALENT_BRANCH_ARRAY[f][i][j];
-			
+
 				-- Setup offsets
 				xOffset = ((j - 1) * SPECIAL_TALENT_BUTTON_SIZE * 2) + INITIAL_SPECIAL_TALENT_OFFSET_X ;
 				yOffset = -((i - 1) * SPECIAL_TALENT_BUTTON_SIZE * 1.75) - INITIAL_SPECIAL_TALENT_OFFSET_Y + 4;
-		
+
 				if ( node.id ) then
 					-- Has talent
 					if ( node.up ~= 0 ) then
@@ -432,7 +440,7 @@ function SpecialTalentFrame_Update()
 					end
 					if ( node.right ~= 0 ) then
 						-- See if any connecting branches are gray and if so color them gray
-						tempNode = SPECIAL_TALENT_BRANCH_ARRAY[f][i][j+1];	
+						tempNode = SPECIAL_TALENT_BRANCH_ARRAY[f][i][j+1];
 						if ( tempNode.left ~= 0 and tempNode.down < 0 ) then
 							SpecialTalentFrame_SetBranchTexture(i, j-1, TALENT_BRANCH_TEXTURECOORDS["right"][tempNode.down], xOffset + SPECIAL_TALENT_BUTTON_SIZE, yOffset, f);
 						else
@@ -489,7 +497,7 @@ function SpecialTalentFrame_Update()
 	local avail = maxpoints - SpecialTalentFrame.talentPoints;
 	learned = learned.." = "..avail.."/"..maxpoints;
 	learnedText:SetText(learned);
-	planned = planned.." = "..SpecialTalentPlannedSaved[player].points.."/"..TALENT_POINTS_AT_60;
+	planned = planned.." = "..SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]].points.."/"..TALENT_POINTS_AT_60;
 	plannedText:SetText(planned);
 end
 
@@ -578,7 +586,7 @@ function SpecialTalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, re
 	else
 		requirementsMet = -1;
 	end
-	
+
 	-- Check to see if are in the same column
 	if ( buttonColumn == column ) then
 		-- Check for blocking talents
@@ -592,7 +600,7 @@ function SpecialTalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, re
 				end
 			end
 		end
-		
+
 		-- Draw the lines
 		for i=tier, buttonTier - 1 do
 			SPECIAL_TALENT_BRANCH_ARRAY[tab][i][buttonColumn].down = requirementsMet;
@@ -600,7 +608,7 @@ function SpecialTalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, re
 				SPECIAL_TALENT_BRANCH_ARRAY[tab][i + 1][buttonColumn].up = requirementsMet;
 			end
 		end
-		
+
 		-- Set the arrow
 		SPECIAL_TALENT_BRANCH_ARRAY[tab][buttonTier][buttonColumn].topArrow = requirementsMet;
 		return;
@@ -609,7 +617,7 @@ function SpecialTalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, re
 	if ( buttonTier == tier ) then
 		local left = min(buttonColumn, column);
 		local right = max(buttonColumn, column);
-		
+
 		-- See if the distance is greater than one space
 		if ( (right - left) > 1 ) then
 			-- Check for blocking talents
@@ -656,7 +664,7 @@ function SpecialTalentFrame_DrawLines(buttonTier, buttonColumn, tier, column, re
 	if ( not blocked ) then
 		SPECIAL_TALENT_BRANCH_ARRAY[tab][tier][buttonColumn].down = requirementsMet;
 		SPECIAL_TALENT_BRANCH_ARRAY[tab][buttonTier][buttonColumn].up = requirementsMet;
-		
+
 		for i=tier, buttonTier - 1 do
 			SPECIAL_TALENT_BRANCH_ARRAY[tab][i][buttonColumn].down = requirementsMet;
 			SPECIAL_TALENT_BRANCH_ARRAY[tab][i + 1][buttonColumn].up = requirementsMet;
@@ -705,25 +713,25 @@ end
 
 function SpecialTalent_PlanTalent( tabID, talentID )
 	--local tabID, talentID = this.tabID, this:GetID();
-	
+
 	-- Get talent info
 	local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tabID, talentID);
 	local saved = SpecialTalentPlannedSaved[PlayerOfRealm];
-	local tab = saved[tabID];
+	local tab = saved["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]][tabID];
 	local plannedPoints = tab[talentID];
 	local tabPoints = tab.points;
-	local talentPoints = saved.points;
-	
+	local talentPoints = saved["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]].points;
+
 	if ( talentPoints<TALENT_POINTS_AT_60 ) then
 		if ( not plannedPoints ) then
 			tab[talentID] = 1;
 			tab.points = tabPoints + 1;
-			saved.points = talentPoints + 1;
+			saved["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]].points = talentPoints + 1;
 		elseif ( plannedPoints < maxRank ) then
 			plannedPoints = plannedPoints + 1;
 			tab[talentID] = plannedPoints;
 			tab.points = tabPoints + 1;
-			saved.points = talentPoints + 1;
+			saved["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]].points = talentPoints + 1;
 		end
 	end
 	SpecialTalentFrame_Update();
@@ -731,15 +739,15 @@ end
 
 function SpecialTalent_UnplanTalent( tabID, talentID )
 	--local tabID, talentID = this.tabID, this:GetID();
-	
+
 	-- Get talent info
 	local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tabID, talentID);
 	local saved = SpecialTalentPlannedSaved[PlayerOfRealm];
-	local tab = saved[tabID];
+	local tab = saved["plans"][saved["selectedPlan"]][tabID];
 	local plannedPoints = tab[talentID];
 	local tabPoints = tab.points;
-	local talentPoints = saved.points;
-	
+	local talentPoints = saved["plans"][saved["selectedPlan"]].points;
+
 	if ( plannedPoints and plannedPoints > 0 ) then
 		-- check if tiers below and enough talentPoints to spare
 		local hiTier = getglobal("SpecialTalentFrameTabFrame"..tabID).greatestTier;
@@ -774,7 +782,7 @@ function SpecialTalent_UnplanTalent( tabID, talentID )
 			plannedPoints = plannedPoints > 1 and plannedPoints-1 or nil;
 			tab[talentID] = plannedPoints;
 			tab.points = tabPoints-1;
-			saved.points = talentPoints-1;
+			saved["plans"][saved["selectedPlan"]].points = talentPoints-1;
 		end
 	end
 	SpecialTalentFrame_Update();
@@ -798,7 +806,7 @@ function SpecialTalentFrameTalent_OnClick()
 		if ( not this.clickable ) then
 			return;
 		end
-		
+
 		if ( arg1=="LeftButton" ) then
 			SpecialTalent_PlanTalent( tabID, talentID );
 		elseif ( arg1=="RightButton" ) then
@@ -856,10 +864,19 @@ function SpecialTalent_LoadPlannedSaved()
 	if ( not SpecialTalentPlannedSaved[player] ) then
 		SpecialTalentPlannedSaved[player]={};
 	end
+	if ( not SpecialTalentPlannedSaved[player]["selectedPlan"] ) then
+		SpecialTalentPlannedSaved[player]["selectedPlan"]=1;
+	end
+	if ( not SpecialTalentPlannedSaved[player]["plans"] ) then
+		SpecialTalentPlannedSaved[player]["plans"]={};
+	end
+	if ( not SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]] ) then
+		SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]]={};
+	end
 	for t=1, MAX_TALENT_TABS do
-		if ( GetTalentTabInfo(t) and not SpecialTalentPlannedSaved[player][t] ) then
-			SpecialTalentPlannedSaved[player].points = 0;
-			SpecialTalentPlannedSaved[player][t]={points=0};
+		if ( GetTalentTabInfo(t) and not SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][t] ) then
+			SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]].points = 0;
+			SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][t]={points=0};
 		end
 	end
 end
@@ -888,7 +905,7 @@ function SpecialTalentFrameTab_OnClick()
 		button:SetChecked(0);
 	end
 	this:SetChecked(1);
-	
+
 	SpecialTalentFrameSaved.tabShown = this:GetID();
 	SpecialTalentFrame_Update();
 end
@@ -946,11 +963,16 @@ end
 
 function SpecialTalent_GetTalentInfo(tabID, talentID, planned)
 	-- Set the button info
-	local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tabID, talentID);
-	if ( SpecialTalentFrame.learnMode == "planned" or planned ) then
-		rank = SpecialTalentPlannedSaved[PlayerOfRealm][tabID][talentID] or 0;
+
+	if (talentID == nil) then
+		message("SpecialTalent_GetTalentInfo is called with no talentID provided!");
 	end
-	return name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq;
+		local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tabID, talentID);
+		if ( SpecialTalentFrame.learnMode == "planned" or planned ) then
+			rank = SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]][tabID][talentID] or 0;
+		end
+		return name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq;
+
 end
 
 function SpecialTalent_GetTalentPrereqs(tabID, talentID, planned)
@@ -958,6 +980,7 @@ function SpecialTalent_GetTalentPrereqs(tabID, talentID, planned)
 	local i=1;
 	while prereqs[i] do
 		local tier, column, isLearnable = prereqs[i], prereqs[i+1], prereqs[i+2];
+
 		local _, _, _, _, rank, maxRank = SpecialTalent_GetTalentInfo(tabID, SPECIAL_TALENT_BRANCH_ARRAY[tabID][tier][column].id, (SpecialTalentFrame.learnMode == "planned" or planned) );
 		if ( rank==maxRank ) then
 			prereqs[i+2]=1;
@@ -977,7 +1000,7 @@ function SpecialTalentButton_OnEnter()
 	if ( tp_webdata ) then -- requires either Talent Planner addon or WebData.lua in SpecialTalentUI folder
 		local name, texture, row, col, rank, maxRank = GetTalentInfo( tabID, talentID );
 		local class = SPECIAL_TALENT_CLASSES[UnitClass("player")];
-		local goalRank = SpecialTalentPlannedSaved[PlayerOfRealm][tabID][talentID];
+		local goalRank = SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]][tabID][talentID];
 		if ( not goalRank or not class ) then return; end
 		if ( (goalRank==1 and rank==0) or (goalRank==rank) ) then
 			local text=GameTooltipTextLeft2:GetText();
@@ -992,4 +1015,26 @@ function SpecialTalentButton_OnEnter()
 		end
 		GameTooltip:Show();
 	end
+end
+
+function SpecialTalentUI_NextPlan()
+	SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] = SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] + 1
+	if SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] == MAX_PLAN_COUNT + 1 then
+		SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] = 1
+	end
+	SpecialTalentUI_ChangePlan()
+end
+
+function SpecialTalentUI_PreviousPlan()
+	SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] = SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] - 1
+	if SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] == 0 then
+		SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"] = MAX_PLAN_COUNT
+	end
+	SpecialTalentUI_ChangePlan()
+end
+
+function SpecialTalentUI_ChangePlan()
+	SpecialTalentFrameTitleText:SetText(SPECIAL_TALENT.." - "..SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]);
+	SpecialTalent_LoadPlannedSaved();
+	SpecialTalentFrame_Update()
 end

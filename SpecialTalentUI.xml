@@ -460,7 +460,7 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				
+
 				<Scripts>
 					<OnLoad>
 				this:RegisterForDrag("LeftButton");
@@ -503,6 +503,40 @@
 							SpecialTalentFrameSaved.frameMinimized = 1;
 						end
 						SpecialTalentFrame_ResetDrag();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SpecialTalentFrameNextButton" inherits="UIPanelButtonTemplate" text="+">
+				<Size>
+					<AbsDimension x="19" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SpecialTalentFrame">
+						<Offset>
+							<AbsDimension x="-80" y="-12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpecialTalentUI_NextPlan();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SpecialTalentFramePreviousButton" inherits="UIPanelButtonTemplate" text="-">
+				<Size>
+					<AbsDimension x="19" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SpecialTalentFrame">
+						<Offset>
+							<AbsDimension x="-101" y="-12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpecialTalentUI_PreviousPlan();
 					</OnClick>
 				</Scripts>
 			</Button>
