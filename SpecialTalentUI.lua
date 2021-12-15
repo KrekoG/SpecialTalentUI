@@ -1055,3 +1055,11 @@ function SpecialTalentUI_RenameCurrentPlan(name)
 	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"] = name;
 	SpecialTalentUI_ChangePlan();
 end
+
+function SpecialTalentUI_ShowHideRenamePanel()
+	if (SpecialTalentUI_RenamePanel:IsVisible()) then
+		HideUIPanel(SpecialTalentUI_RenamePanel);
+	else
+		ShowUIPanel(SpecialTalentUI_RenamePanel);
+	end
+end
