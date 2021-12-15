@@ -153,7 +153,8 @@ function SpecialTalentFrame_Minimize()
 	if ( not SpecialTalentFrameSaved.tabShown ) then
 		SpecialTalentFrameSaved.tabShown=1;
 	end
-	SpecialTalentFrameMinimizeButton:SetText("^");
+	SpecialTalentFrameMinimizeButton:SetText("<--->");
+	SpecialTalentFrameMinimizeButton:SetWidth(37);
 	UIPanelWindows["SpecialTalentFrame"] = { area = "left", pushable = 6, whileDead = 1 };
 	SpecialTalentFrame:SetWidth(345);
 	SpecialTalentFrame:SetHeight(586);
@@ -186,7 +187,8 @@ end
 
 function SpecialTalentFrame_Maximize()
 	SpecialTalentFrameSaved.frameMinimized=nil;
-	SpecialTalentFrameMinimizeButton:SetText("v");
+	SpecialTalentFrameMinimizeButton:SetText(">---<");
+	SpecialTalentFrameMinimizeButton:SetWidth(36);
 	UIPanelWindows["SpecialTalentFrame"] = { area = "doublewide", pushable = 6, whileDead = 1 };
 	SpecialTalentFrame:SetWidth(900);
 	SpecialTalentFrame:SetHeight(586);
@@ -1054,12 +1056,4 @@ end
 function SpecialTalentUI_RenameCurrentPlan(name)
 	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"] = name;
 	SpecialTalentUI_ChangePlan();
-end
-
-function SpecialTalentUI_ShowHideRenamePanel()
-	if (SpecialTalentUI_RenamePanel:IsVisible()) then
-		HideUIPanel(SpecialTalentUI_RenamePanel);
-	else
-		ShowUIPanel(SpecialTalentUI_RenamePanel);
-	end
 end
