@@ -125,8 +125,14 @@ function SpecialTalentFrame_OnShow()
 	if (not SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]) then
 		SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]=1
 	end
+	if (not SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]) then
+		SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]] = {}
+	end
+	if (not SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"]) then
+		SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"] = SPECIAL_TALENT.." - "..SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]
+	end
 
-	SpecialTalentFrameTitleText:SetText(SPECIAL_TALENT.." - "..SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]);
+	SpecialTalentFrameTitleText:SetText(SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"]);
 	SetPortraitTexture(SpecialTalentFramePortrait, "player");
 	--show total talent points
 	local tpoints = max(UnitLevel("player")-9, 0);
@@ -1034,7 +1040,18 @@ function SpecialTalentUI_PreviousPlan()
 end
 
 function SpecialTalentUI_ChangePlan()
-	SpecialTalentFrameTitleText:SetText(SPECIAL_TALENT.." - "..SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]);
 	SpecialTalent_LoadPlannedSaved();
 	SpecialTalentFrame_Update()
+	-- to ensure backwards compatibility with previous version BEGIN
+	if (not SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"]) then
+		SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"] = SPECIAL_TALENT.." - "..SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]
+	end
+	-- to ensure backwards compatibility with previous version END
+
+	SpecialTalentFrameTitleText:SetText(SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"]);
+end
+
+function SpecialTalentUI_RenameCurrentPlan(name)
+	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"] = name;
+	SpecialTalentUI_ChangePlan();
 end
