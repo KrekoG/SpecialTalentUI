@@ -154,7 +154,7 @@ function SpecialTalentFrame_Minimize()
 		SpecialTalentFrameSaved.tabShown=1;
 	end
 	SpecialTalentFrameMinimizeButton:SetText("<--->");
-	SpecialTalentFrameMinimizeButton:SetWidth(37);
+	SpecialTalentFrameMinimizeButton:SetWidth(39);
 	UIPanelWindows["SpecialTalentFrame"] = { area = "left", pushable = 6, whileDead = 1 };
 	SpecialTalentFrame:SetWidth(345);
 	SpecialTalentFrame:SetHeight(586);
@@ -172,6 +172,11 @@ function SpecialTalentFrame_Minimize()
 		getglobal("SpecialTalentFrameTabFrame"..i):SetPoint("TOPLEFT", SpecialTalentFrame, "TOPLEFT", 0, -80);
 	end
 
+	SpecialTalentFrameNextButtonSmall:Show();
+	SpecialTalentFramePreviousButtonSmall:Show();
+	SpecialTalentFrameNextButtonLarge:Hide();
+	SpecialTalentFramePreviousButtonLarge:Hide();
+
 	SpecialTalentFrameTalentPointsText:Hide();
 	SpecialTalentFrameTalentPoints:Hide();
 	SpecialTalentFrameUnspentPointsText:SetPoint("LEFT", SpecialTalentFrame, "TOP", -145, -84);
@@ -188,7 +193,7 @@ end
 function SpecialTalentFrame_Maximize()
 	SpecialTalentFrameSaved.frameMinimized=nil;
 	SpecialTalentFrameMinimizeButton:SetText(">---<");
-	SpecialTalentFrameMinimizeButton:SetWidth(36);
+	SpecialTalentFrameMinimizeButton:SetWidth(38);
 	UIPanelWindows["SpecialTalentFrame"] = { area = "doublewide", pushable = 6, whileDead = 1 };
 	SpecialTalentFrame:SetWidth(900);
 	SpecialTalentFrame:SetHeight(586);
@@ -205,6 +210,11 @@ function SpecialTalentFrame_Maximize()
 
 		getglobal("SpecialTalentFrameTabFrame"..i):SetPoint("TOPLEFT", SpecialTalentFrame, "TOPLEFT", (i-1)*278, -80);
 	end
+
+	SpecialTalentFrameNextButtonSmall:Hide();
+	SpecialTalentFramePreviousButtonSmall:Hide();
+	SpecialTalentFrameNextButtonLarge:Show();
+	SpecialTalentFramePreviousButtonLarge:Show();
 
 	SpecialTalentFrameTalentPointsText:Show();
 	SpecialTalentFrameTalentPoints:Show();
