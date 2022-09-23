@@ -595,6 +595,27 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="SpecialTalentFrameResetButton" inherits="UIPanelButtonTemplate" text="reset">
+				<Size>
+					<AbsDimension x="44" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="TOPRIGHT" relativeTo="SpecialTalentFrame">
+						<Offset>
+							<AbsDimension x="-42" y="-108"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (SpecialTalentUI_ResetConfirmationPanel:IsVisible()) then
+							HideUIPanel(SpecialTalentUI_ResetConfirmationPanel);
+						else
+							ShowUIPanel(SpecialTalentUI_ResetConfirmationPanel);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnShow>
@@ -612,106 +633,237 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="SpecialTalentUI_RenamePanel" enableMouse="true" toplevel="true" parent="SpecialTalentFrame" hidden="true">
-	<Size>
-		<AbsDimension x="250" y="64"/>
-	</Size>
-	<Anchors>
-		<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="SpecialTalentFrame">
-			<Offset>
-				<AbsDimension x="-32" y="-12"/>
-			</Offset>
-		</Anchor>
-	</Anchors>
-	<Backdrop bgFile="Interface\Minimap\TooltipBackdrop-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-		<EdgeSize>
-			<AbsValue val="16"/>
-		</EdgeSize>
-		<TileSize>
-			<AbsValue val="16"/>
-		</TileSize>
-		<BackgroundInsets>
-			<AbsInset left="4" right="4" top="4" bottom="4"/>
-		</BackgroundInsets>
-	</Backdrop>
-	<Layers>
-		<Layer level="OVERLAY">
-			<FontString name="SpecialTalentUI_RenameInstructions" inherits="GameFontNormalSmall" text="Rename your talent plan:">
+	<Frame name="SpecialTalentUI_ResetConfirmationPanel" enableMouse="true" toplevel="true" parent="SpecialTalentFrame" hidden="true">
+		<Size>
+			<AbsDimension x="130" y="126"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="SpecialTalentFrame">
+				<Offset>
+					<AbsDimension x="3" y="-12"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\Minimap\TooltipBackdrop-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="SpecialTalentUI_ResetInstructions" inherits="GameFontNormalSmall" text="Reset talent tree plan:">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="SpecialTalentUI_ResetOneButton" inherits="UIPanelButtonTemplate" text="1st Tab">
+				<Size>
+					<AbsDimension x="120" y="21"/>
+				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Anchor point="TOP" relativeTo="$parent">
 						<Offset>
-							<AbsDimension x="5" y="-5"/>
+							<AbsDimension x="0" y="-18"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
-			</FontString>
-		</Layer>
-	</Layers>
-	<Frames>
-		<EditBox name="SpecialTalentUI_RenameEditBox" autoFocus="false" inherits="InputBoxTemplate" letters="25">
-			<Size>
-				<AbsDimension x="235" y="16"/>
-			</Size>
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="SpecialTalentUI_RenameInstructions" relativePoint="BOTTOMLEFT">
-					<Offset>
-						<AbsDimension x="5" y="-5	"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-			<FontString inherits="ChatFontNormal" bytes="64"/>
-			<Layers>
-				<Layer level="OVERLAY">
-					<FontString name="SpecialTalentUI_RenameEditBox" inherits="GameFontNormalSmall" justifyH="LEFT">
-						<Size>
-							<AbsDimension x="120" y="20"/>
-						</Size>
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="SpecialTalentUI_Rename" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="0" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-				</Layer>
-			</Layers>
-		</EditBox>
-		<Button name="SpecialTalentUI_Rename" inherits="UIPanelButtonTemplate" text="Rename">
-			<Size>
-				<AbsDimension x="120" y="21"/>
-			</Size>
-			<Anchors>
-				<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SpecialTalentUI_RenameEditBox">
-					<Offset>
-						<AbsDimension x="-5" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-			<Scripts>
-				<OnClick>
-					SpecialTalentUI_RenameCurrentPlan(SpecialTalentUI_RenameEditBox:GetText());
-					HideUIPanel(SpecialTalentUI_RenamePanel);
-				</OnClick>
-			</Scripts>
-		</Button>
-		<Button name="SpecialTalentUI_Cancel" inherits="UIPanelButtonTemplate" text="Cancel">
-			<Size>
-				<AbsDimension x="120" y="21"/>
-			</Size>
-			<Anchors>
-				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="SpecialTalentUI_Rename">
-					<Offset>
-						<AbsDimension x="0" y="0"/>
-					</Offset>
-				</Anchor>
-			</Anchors>
-			<Scripts>
-				<OnClick>
-					HideUIPanel(SpecialTalentUI_RenamePanel);
-				</OnClick>
-			</Scripts>
-		</Button>
-	</Frames>
+				<Scripts>
+					<OnClick>
+						SpecialTalentUI_ResetTree(1);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SpecialTalentUI_ResetTwoButton" inherits="UIPanelButtonTemplate" text="2nd Tab">
+				<Size>
+					<AbsDimension x="120" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="-38"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpecialTalentUI_ResetTree(2);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SpecialTalentUI_ResetThreeButton" inherits="UIPanelButtonTemplate" text="3rd Tab">
+				<Size>
+					<AbsDimension x="120" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="-58"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpecialTalentUI_ResetTree(3);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SpecialTalentUI_ResetAllButton" inherits="UIPanelButtonTemplate" text="All of them">
+				<Size>
+					<AbsDimension x="120" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="-78"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpecialTalentUI_ResetTree(0);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SpecialTalentUI_ResetCancel" inherits="UIPanelButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="120" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="-98"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(SpecialTalentUI_ResetConfirmationPanel);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SpecialTalentUI_ResetOneButton:SetText(GetTalentTabInfo(1));
+				SpecialTalentUI_ResetTwoButton:SetText(GetTalentTabInfo(2));
+				SpecialTalentUI_ResetThreeButton:SetText(GetTalentTabInfo(3));
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SpecialTalentUI_RenamePanel" enableMouse="true" toplevel="true" parent="SpecialTalentFrame" hidden="true">
+		<Size>
+			<AbsDimension x="250" y="64"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="SpecialTalentFrame">
+				<Offset>
+					<AbsDimension x="-32" y="-12"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\Minimap\TooltipBackdrop-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="SpecialTalentUI_RenameInstructions" inherits="GameFontNormalSmall" text="Rename your talent plan:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="SpecialTalentUI_RenameEditBox" autoFocus="false" inherits="InputBoxTemplate" letters="25">
+				<Size>
+					<AbsDimension x="235" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SpecialTalentUI_RenameInstructions" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5	"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString inherits="ChatFontNormal" bytes="64"/>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="SpecialTalentUI_RenameEditBox" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="120" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SpecialTalentUI_Rename" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</EditBox>
+			<Button name="SpecialTalentUI_Rename" inherits="UIPanelButtonTemplate" text="Rename">
+				<Size>
+					<AbsDimension x="120" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SpecialTalentUI_RenameEditBox">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpecialTalentUI_RenameCurrentPlan(SpecialTalentUI_RenameEditBox:GetText());
+						HideUIPanel(SpecialTalentUI_RenamePanel);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SpecialTalentUI_RenameCancel" inherits="UIPanelButtonTemplate" text="Cancel">
+				<Size>
+					<AbsDimension x="120" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="SpecialTalentUI_Rename">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(SpecialTalentUI_RenamePanel);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
 	</Frame>
 </Ui>

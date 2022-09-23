@@ -155,6 +155,7 @@ function SpecialTalentFrame_Minimize()
 	end
 	SpecialTalentFrameMinimizeButton:SetText("<--->");
 	SpecialTalentFrameMinimizeButton:SetWidth(39);
+	SpecialTalentUI_ResetConfirmationPanel:SetPoint("TOPLEFT", SpecialTalentFrame, "TOPRIGHT", 3, -12);
 	UIPanelWindows["SpecialTalentFrame"] = { area = "left", pushable = 6, whileDead = 1 };
 	SpecialTalentFrame:SetWidth(345);
 	SpecialTalentFrame:SetHeight(586);
@@ -194,6 +195,7 @@ function SpecialTalentFrame_Maximize()
 	SpecialTalentFrameSaved.frameMinimized=nil;
 	SpecialTalentFrameMinimizeButton:SetText(">---<");
 	SpecialTalentFrameMinimizeButton:SetWidth(38);
+	SpecialTalentUI_ResetConfirmationPanel:SetPoint("TOPLEFT", SpecialTalentFrame, "TOPRIGHT", -33, -12);
 	UIPanelWindows["SpecialTalentFrame"] = { area = "doublewide", pushable = 6, whileDead = 1 };
 	SpecialTalentFrame:SetWidth(900);
 	SpecialTalentFrame:SetHeight(586);
@@ -891,9 +893,11 @@ function SpecialTalent_LoadPlannedSaved()
 	if ( not SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]] ) then
 		SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]]={};
 	end
+	if ( not SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]].points) then
+		SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]].points = 0;
+	end
 	for t=1, MAX_TALENT_TABS do
 		if ( GetTalentTabInfo(t) and not SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][t] ) then
-			SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]].points = 0;
 			SpecialTalentPlannedSaved[player]["plans"][SpecialTalentPlannedSaved[player]["selectedPlan"]][t]={points=0};
 		end
 	end
@@ -1065,5 +1069,24 @@ end
 
 function SpecialTalentUI_RenameCurrentPlan(name)
 	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]]["name"] = name;
+	SpecialTalentUI_ChangePlan();
+end
+
+function SpecialTalentUI_ResetCurrentTree(tree)
+	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]].points =
+	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]].points -
+	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]][tree].points;
+
+	SpecialTalentPlannedSaved[PlayerOfRealm]["plans"][SpecialTalentPlannedSaved[PlayerOfRealm]["selectedPlan"]][tree] = nil;
+end
+
+function SpecialTalentUI_ResetTree(tree)
+	if tree == 1 or tree == 2 or tree == 3 then
+		SpecialTalentUI_ResetCurrentTree(tree)
+	else
+		SpecialTalentUI_ResetCurrentTree(1)
+		SpecialTalentUI_ResetCurrentTree(2)
+		SpecialTalentUI_ResetCurrentTree(3)
+	end
 	SpecialTalentUI_ChangePlan();
 end
